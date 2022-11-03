@@ -1,0 +1,281 @@
+---
+title: "CASO - BCP"
+author:
+- "Anticona Puza, Francescolli Gustavo"
+date: "03/11/2022"
+output:
+  html_document: default
+  pdf_document: default
+  html_notebook: default
+  beamer_presentation: default
+subtitle: Ceses BCP
+---
+
+Lo primero que haremos es cargar las librerías que se emplearán:
+
+```{r}
+
+library(readr)
+library(dplyr)
+library(readxl)
+
+```
+
+```{r setup, include=FALSE}
+
+C1_1 <- read_excel("Ceses1.xlsx", sheet = "Hoja1")
+C1_2 <- read_excel("Ceses1.xlsx", sheet = "Hoja2")
+C1_3 <- read_excel("Ceses1.xlsx", sheet = "Hoja3")
+C1_N <- rbind(C1_1, C1_2)
+C1 <- rbind(C1_N, C1_3)
+
+```
+
+```{r setup, include=FALSE}
+
+C2_1 <- read_excel("Ceses2.xlsx", sheet = "Hoja1")
+C2_2 <- read_excel("Ceses2.xlsx", sheet = "Hoja2")
+C2 <- rbind(C2_1, C2_2)
+
+```
+
+```{r setup, include=FALSE}
+
+C3 <- read_excel("Ceses3.xlsx", sheet = "Hoja1")
+
+```
+
+```{r setup, include=FALSE}
+
+C4_1 <- read_excel("Ceses4.xlsx", sheet = "Hoja1")
+C4_2 <- read_excel("Ceses4.xlsx", sheet = "Hoja2")
+C4_3 <- read_excel("Ceses4.xlsx", sheet = "Hoja3")
+C4_4 <- read_excel("Ceses4.xlsx", sheet = "Hoja4")
+C4_N <- rbind(C4_1, C4_2)
+C4_M <- rbind(C4_3, C4_4)
+C4 <- rbind(C4_N, C4_M)
+
+```
+
+```{r setup, include=FALSE}
+
+C5_1 <- read_excel("Ceses5.xlsx", sheet = "Hoja1")
+C5_2 <- read_excel("Ceses5.xlsx", sheet = "Hoja2")
+C5 <- rbind(C5_1, C5_2)
+
+```
+
+```{r setup, include=FALSE}
+
+C6 <- read_excel("Ceses6.xlsx", sheet = "Hoja1")
+
+```
+
+```{r}
+
+CS <- rbind(C1, C2)
+CB <- rbind(C3, C4)
+CK <- rbind(C5, C6)
+CL <- rbind(CS, CB)
+C <- rbind(CL, CK)
+C <- C %>% rename(Area="Área")
+
+```
+
+
+## Primera Etapa -> Verificación de los datos nulos (NA).
+
+
+```{r}
+
+sum(is.na(C1)) # Cuenta NA en todo C1
+sum(!is.na(C1)) # Cuenta los datos completos que hay en todo C1
+sum(complete.cases(C1)) # El numero de observaciones (filas) sin NA
+sum(!complete.cases(C1)) # El numero de observaciones (filas) con NA
+
+```
+
+```{r}
+
+sum(is.na(C2)) # Cuenta NA en todo C2
+sum(!is.na(C2)) # Cuenta los datos completos que hay en todo C2
+sum(complete.cases(C2)) # El numero de observaciones (filas) sin NA
+sum(!complete.cases(C2)) # El numero de observaciones (filas) con NA
+
+```
+
+```{r}
+
+sum(is.na(C3)) # Cuenta NA en todo C3
+sum(!is.na(C3)) # Cuenta los datos completos que hay en todo C3
+sum(complete.cases(C3)) # El numero de observaciones (filas) sin NA
+sum(!complete.cases(C3)) # El numero de observaciones (filas) con NA
+
+```
+
+```{r}
+
+sum(is.na(C4)) # Cuenta NA en todo C4
+sum(!is.na(C4)) # Cuenta los datos completos que hay en todo C4
+sum(complete.cases(C4)) # El numero de observaciones (filas) sin NA
+sum(!complete.cases(C4)) # El numero de observaciones (filas) con NA
+
+```
+
+```{r}
+
+sum(is.na(C5)) # Cuenta NA en todo C5
+sum(!is.na(C5)) # Cuenta los datos completos que hay en todo C5
+sum(complete.cases(C5)) # El numero de observaciones (filas) sin NA
+sum(!complete.cases(C5)) # El numero de observaciones (filas) con NA
+
+```
+
+```{r}
+
+sum(is.na(C6)) # Cuenta NA en todo C6
+sum(!is.na(C6)) # Cuenta los datos completos que hay en todo C6
+sum(complete.cases(C6)) # El numero de observaciones (filas) sin NA
+sum(!complete.cases(C6)) # El numero de observaciones (filas) con NA
+
+```
+
+```{r}
+
+sum(is.na(C)) # Cuenta NA en todo C
+sum(!is.na(C)) # Cuenta los datos completos que hay en todo C
+sum(complete.cases(C)) # El numero de observaciones (filas) sin NA
+sum(!complete.cases(C)) # El numero de observaciones (filas) con NA
+
+```
+
+## Segunda Etapa -> Análisis de las preguntas.
+
+```{r Pregunta 1}
+
+#Area vs Edad → ¿En qué Área se presentó mayor cantidad de despidos y en qué rango de Edad se detectó la mayor cantidad de despidos?
+
+#La mayor cantidad de despidos se encontró en el Área de Gerencia de División en Canales de Atención con una mayoría entre los 21 a los 31.
+
+#C_Area → es un nuevo dataframe dedicado a solo el Área de Gerencia de División en Canales de Atención.
+
+C_Area <- filter(C, Area == "GCIA DE DIVISION CANALES DE ATENCION")
+
+Area_Edad=table(C_Area$Area,C_Area$Edad)
+Area_Edad
+
+barplot(Area_Edad,col=c("blue"),main="Edad vs Area",xlab="Edad",ylab="GCIA DE DIVISION CANALES DE ATENCION")
+
+```
+
+```{r Pregunta 2}
+
+#Motivo_medida vs Edad → De acuerdo con el filtro anterior tomando en cuenta el rango de Edad que tuvo más cantidad de ceses, ¿Cuál fue la razón principal del despido?
+
+#1 <- Despido
+#1 <- Fue despedido
+#1 <- Se le despidió
+
+#2 <- No se le renovó el contrato
+#2 <- Vencimiento del contrato
+
+#3 <- Presentó su cart de renuncia
+#3 <- Presentó su carta de renuncia
+#3 <- Renunció
+#3 <- Renunció.
+
+#Permite conocer todas las formas que han respondido para la variable Motivo_Medida
+
+unique(C_Area$Motivo_Medida)
+
+C_Motivo <- C_Area%>% mutate(
+  Motivo = ifelse(Motivo_Medida %in% c("Despido", "Fue despedido", "Se le despidió"), 1, ifelse(Motivo_Medida %in% c("No se le renovó el contrato", "Vencimiento del contrato"), 2, ifelse(Motivo_Medida %in% c("Presentó su cart de renuncia", "Presentó su carta de renuncia", "Renunció", "Renunció."), 3, Motivo_Medida)))) -> Motivo
+
+#Con este comando se visualiza que la variable se ha corregido 
+
+
+C_Mot_Edad <- filter(C_Motivo, Edad %in% c(20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30))
+
+Motivo_Edad=table(C_Mot_Edad$Motivo,C_Mot_Edad$Edad)
+Motivo_Edad
+barplot(Motivo_Edad,col=c("Red", "green", "blue"),main="Edad vs Cantidad de Colaboradores",xlab="Edad",ylab="Cantidad de Colaboradores")
+legend("topright", legend = c("Renuncia", "Contrato", "Despido"), pch =  c("3", "2", "1"))
+
+```
+
+```{r Pregunta 3}
+
+#F <- Femenino
+#F <- Mujer
+#F <- Mujer....
+
+#M <- Hombre..
+#M <- Masculino
+#M <- Varón
+
+C_Sexo <- C_Mot_Edad %>% mutate(
+  S = ifelse(Sexo %in% c("Femenino", "Mujer", "Mujer…."), "F", ifelse(Sexo %in% c("Hombre..", "Masculino", "Varón"), "M", Sexo))) -> S
+
+C_Sexo <- filter(C_Sexo, Edad %in% c(20, 21, 22, 23, 24, 25, 26, 27, 28))
+
+Sexo_Motivo=table(C_Sexo$S,C_Sexo$Motivo)
+Sexo_Motivo
+mosaicplot(Sexo_Motivo,col=c("Blue","Brown","Black"),main = "Motivo vs Sexo",xlab="Sexo",ylab = "Motivo")
+
+Sexo_Motivo
+
+plot(Sexo_Motivo,col=c("blue", "green", "black", "violet"),main="Sexo vs Motivo",xlab="Sexo",ylab="Motivo")
+legend("topright", legend = c("Despido", "Contrato", "Renuncia"), pch =  c("1", "2", "3"))
+
+```
+
+```{r}
+
+library(ggplot2)
+
+library("dplyr")
+
+C_Fecha <- format(C1$Fec_Cese,"%m%Y") 
+C_Fecha
+
+class(C_Fecha)
+
+C_Sexo <- C_Mot_Edad %>% mutate(
+  C_Fecha = format(C_Mot_Edad$Fec_Cese,"%m%Y")) -> C_Fecha
+
+
+C_Fecha = as.numeric(C_Sexo$C_Fecha)
+
+C_Sexo %>%
+  select(Fec_Cese, Sexo) %>%
+  filter(Fec_Cese > 122019 & Fec_Cese < 042020)
+
+C_Sexo %>% 
+  select(Motivo, Fec_Cese, Sexo) %>%
+  filter(between(Fec_Cese, as.Date("2019-11-01"), as.Date("2020-03-31")))
+
+ggplot(C_Sexo, title = "Motivos de colaboradores durante la Pandemia", aes(x=Fec_Cese, y=Motivo)) + geom_line(colour="black") + geom_point( size = 2, shape=10, fill="white", colour = "blue") + theme_minimal()
+
+
+```
+
+```{r Pregunta 4}
+
+C_Prepandemia <- filter(C_Sexo, C_Fecha %in% c("102019", "112019", "122019"))
+
+C_Pandemia <- filter(C_Sexo, Edad %in% c(22, 23, 24, 25), C_Fecha %in% c("012020", "022020", "032020", "042020", "052020", "062020", "072020", "082020", "092020", "102020", "112020", "122020", "012021"))
+
+C_Fe_Ed_Pre <- C_Prepandemia %>% arrange(C_Fecha)
+Edad_Fecha_Pre=table(C_Fe_Ed_Pre$Edad,C_Fe_Ed_Pre$C_Fecha)
+Edad_Fecha_Pre
+
+barplot(Edad_Fecha_Pre,col=c("blue"),main="Ceses en el Area antes de Pandemia",xlab="Meses",ylab="GCIA DE DIVISION CANALES DE ATENCION")
+
+C_Fe_Ed_Pandemia <- C_Pandemia %>% arrange(C_Fecha)
+Edad_Fecha_Pan=table(C_Fe_Ed_Pandemia$Edad,C_Fe_Ed_Pandemia$C_Fecha)
+Edad_Fecha_Pan
+
+barplot(Edad_Fecha_Pan,col=c("blue", "green", "black", "violet"),main="Ceses en el Area durante la Pandemia",xlab="Meses", ylim = c(0,140), ylab="GCIA DE DIVISION CANALES DE ATENCION")
+legend("topright", legend = c("22", "23", "24", "25"), col = c("b", "g", "b", "v"))
+
+```
